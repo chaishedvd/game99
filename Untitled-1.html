@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>特訓 99 小遊戲</title>
+</head>
+<body>
+    <div id="loading">loading</div>
+    <div id="menu" style="display: none">
+        <button onClick="startGame">Start</button>
+    </div>
+    <div id="game" style="display: none">
+        <canvas id="cvs" width="600" height="450" style="border:1px solid black"></canvas>
+    </div>
+    <script src="lib.js"></script>
+    <script>
+//初始化資料
+ga.ctx=document.querySelector("#cvs").getContext("2d");
+ga.audio=new AudioContext();
+loadResources();
+function loadResources(){
+    loadImages();
+    loadSounds();
+}
+      
+      function  loadImages(){
+           for(let name in ga.res.imgs){
+            loadImage(name, ga.res.imgs[name]); //for迴圈跑多張圖片
+           }
+      }
+      function  loadImage(name, src){
+          let img=new Image();
+          img.src=src;
+          img.addEventListener("load", function(){
+              ga.res.imgs[name]=img;
+              resourceLoaded();
+          });
+          }
+      function  loadSounds(){
+          for(let name in ga.res.sounds){
+            loadSound(name, ga.res.sounds[name]);
+          }
+          }
+    function  loadSounds(name, src){  
+             let xhr=new XMLHttpRequest();
+             xhr.open("get" , src);
+             xhr.responseType="arrayBuffer";
+             xhr.addEventListener("load",function(){
+                 ga.audio.decodeAudioData(xhr.response, function(bufer){
+                    ga.res.sounds[name]=buffer;
+                    resourceLoaded();
+                 });
+             });
+          xhr.send();
+          }
+      function  resourceLoaded(){
+          ga.res.loaded++;
+          let percentage=100*ga.res.loaded/ga.res.total;
+          let loading=document.querySelector("#loading");
+          loading.innerHTML=percentage+"%";
+          if(ga.res.loaded==ga.res.total){
+            startMenu();
+          }
+          
+      }
+      function startMenu(){
+          document.querySelector("#loading").style.display="none";
+          document.querySelector("#menu").style.display="block";
+          document.querySelector("#game").style.display="none";
+      }
+      function startGame(){
+       //處理 HTML DOM
+        document.querySelector("#menu").style.display="none";
+        document.querySelector("#gmae").style.display="block";
+       //加入遊戲控制
+        document.addEventListener("keydown", keydown);
+        document.querySelector("keyup", keyup);
+       //初始化遊戲資料
+        ga.game.circle=0;
+        ga.game.key={
+            space:false, left:false, top:false, right:false
+    };       
+        ga.game.plane= new ga.lib.Plane();
+        ga.game.bulletSystem=new ga.lib.BulletSystem();
+        ga.game.particles=[
+            ga.game.plane,
+            ga.game.bulletSystem
+    ];
+        //啟動遊戲
+       window.setInterval(refreshGame, 10);
+     }
+         function keydown(e){
+             console.log(e.keyCode);
+         }
+      function refreshGame(){
+       let particles=ga.game.particles;
+      //更新資料
+       for(let i=0;i<particles.length;i++){
+           let die=particles[i].update();
+           if (die){
+            particles.splie(i, 1);
+            i--;
+           };
+       }
+      }
+      //清空畫面
+      ga.ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      //重畫
+      for(let i=0;i <particles.length;i++){
+        particles[i].render();
+      }
+      ga.game.circle++;
+      
+      function gmaeOver(){
+          let plane= ga.game.plane;
+          ga.ctx.drawImage(ga.res.imgs.explosion,
+          plane.x-25, plane.y-25,
+          50,50
+      );
+      window.clearInterval(ga.game.id);
+      ga.ctx.canvas.addEventListener("click", startGame);
+      document.removeEventListener("keydown", keydown);
+      document.removeEventListener("keyup", keyup);     
+}
+function checkExplosion
+          window.clearInterval(ga.game.id)
+      
+
+      checkExplosion();
+      function checkExplosion(){
+          let bullets=ga.game.bulletSystem.bullets;
+          let plane=ga.game.plane;
+          //檢查每個子彈有沒有撞到飛機
+          for (let i=0;i<bullets.length;i++){
+              let threshold=bullets[i].size+(plane.size/2);
+              let distance=Math.sqrt(
+
+
+              )
+
+          }
+
+
+
+      }
+
+    </script>
+</body>
+</html>
